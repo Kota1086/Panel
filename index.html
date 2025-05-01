@@ -1,0 +1,37 @@
+// public/index.html // Simple UI for Deriv AI Bot with Signal & Trade Button
+
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deriv AI Trading Bot</title>
+  <style>
+    body { font-family: sans-serif; background: #f4f4f4; text-align: center; padding: 40px; }
+    #signal { font-size: 24px; margin-bottom: 20px; }
+    button { padding: 10px 20px; font-size: 18px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>Deriv AI Trading Bot</h1>
+  <div id="signal">Loading signal...</div>
+  <button onclick="tradeNow()">Trade Now</button>  <script>
+    async function fetchSignal() {
+      const res = await fetch("/api/signal");
+      const data = await res.json();
+      if (data.type === "WAITING") {
+        document.getElementById("signal").innerText = "No signal yet...";
+      } else {
+        document.getElementById("signal").innerText = `Signal: ${data.type} (${data.asset}) - $${data.amount} / ${data.duration}m`;
+      }
+    }
+
+    async function tradeNow() {
+      const res = await fetch("/api/trade", { method: "POST" });
+      const text = await res.text();
+      alert(text);
+    }
+
+    setInterval(fetchSignal, 5000); // Refresh every 5s
+    fetchSignal();
+  </script></body>
+</html>
